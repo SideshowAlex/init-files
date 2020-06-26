@@ -1,0 +1,199 @@
+[user]
+    email = aldickin@cisco.com
+	name = Alex Dickinson
+
+[core]
+    editor = vim
+    excludesfile = ~/.gitignore
+    pager = less -F -X
+
+[alias]
+
+    cdiff = "! git diff --color | diff-so-fancy | less --tabs=4 -RFX $@"
+
+    lock-remote = "! f() { \
+        git remote set-url --push ${1:-upstream} locked; \
+    }; f"
+
+    unlock-remote = "! f() { \
+        remote=${1:-upstream}; \
+        git remote set-url --push ${remote} $(git remote get-url ${remote}); \
+    }; f"
+
+    roll-commits = "! f() { \
+            num=${1:-2}; \
+            tag=$(date +"tag-%s"); \
+            git tag $tag;\
+            git reset --hard HEAD~${num};\
+            for i in $(seq $((num-2)) 0); do \
+                git cherry-pick ${tag}~${i}; \
+            done; \
+            git cherry-pick ${tag}~$((num-1)); \
+            git tag -d ${tag}; \
+        }; f"
+
+    unroll-commits = "! f() { \
+            num=${1:-2}; \
+            tag=$(date +"tag-%s"); \
+            git tag $tag;\
+            git reset --hard HEAD~${num};\
+            git cherry-pick ${tag}; \
+            for i in $(seq $((num-1)) 1); do \
+            git cherry-pick ${tag}~${i}; \
+            done; \
+            git tag -d ${tag}; \
+        }; f"
+
+    promote-commit = "! f() { \
+            num=$(($(git rev-list --count HEAD) - $(git rev-list --count ${1}) + 1)); \
+            git roll-commits ${num}; \
+        }; f"
+
+    demote-commit = "! f() { \
+            num=$(($(git rev-list --count HEAD) - $(git rev-list --count ${1}) + 1)); \
+            git unroll-commits ${num}; \
+        }; f"
+
+    swap-commits = "! f() { git roll-commits 2; }; f"
+
+    update-commit = "!f() { rev=${1:-$(git rev-parse HEAD)}; git commit -a --fixup=${rev} && git rebase -i ${rev}~1 --autosquash; }; f"
+
+    undo = "! f() { \
+            msg_file=$(date +"file-%s");\
+            git show -s --format=%B HEAD > $msg_file;\
+            git reset HEAD~1 --soft;\
+            git reset HEAD $*;\
+            git commit -F $msg_file;\
+            rm $msg_file;\
+        }; f"
+
+    quick-fix = "!f() { git commit -a --fixup=HEAD; git squash-commits; }; f"
+
+    join-commits = "! f() { \
+        msg_file=$(date +"file-%s");\
+        num=${1:-2}; \
+        git show -s --format=%B HEAD~$((num - 1)) > $msg_file; \
+        git reset HEAD~${num} --soft;\
+        git commit -F $msg_file;\
+        rm $msg_file;\
+    }; f"
+
+    squash-commits = "! f() { \
+        commit=${1:-HEAD~1}; \
+        msg_file=$(date +"file-%s");\
+        git show -s --format=%B ${commit} > $msg_file; \
+        git reset ${commit}~1 --soft;\
+        git commit -F $msg_file;\
+        rm $msg_file;\
+    }; f"
+
+
+    files = diff-tree --no-commit-id --name-only -r
+    sno   = show --name-only
+    dno   = diff --name-only
+    qlog  = log --pretty=oneline --abbrev-commit
+    ls    = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+
+    graph = log \
+            --date=local \
+            --graph \
+            --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n%C(white)%w(110,10,10)%s%C(reset) %C(bold yellow)- %an %n%C(red)%b%C(reset)' --abbrev-commit 
+
+    qgraph = log \
+            --date=local \
+            --graph \
+            --abbrev-commit \
+            --format=format:'%C(bold blue)%h%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)'
+
+ 
+    graphall = log \
+            --all \
+            --date=local \
+            --graph \
+            --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n%C(white)%w(110,10,10)%s%C(reset) %C(bold yellow)- %an %n%C(red)%b%C(reset)' --abbrev-commit 
+ 
+    qgraphall = log \
+            --all \
+            --date=local \
+            --graph \
+            --abbrev-commit \
+        --format=format:'%C(bold blue)%h%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)'
+
+#The placeholders are:
+#?    %H: commit hash
+#x    %h: abbreviated commit hash
+#?    %T: tree hash
+#?    %t: abbreviated tree hash
+#?    %P: parent hashes
+#?    %p: abbreviated parent hashes
+#?    %an: author name
+#?    %aN: author name (respecting .mailmap, see git-shortlog(1) or git-blame(1))
+#?    %ae: author email
+#?    %aE: author email (respecting .mailmap, see git-shortlog(1) or git-blame(1))
+#?    %ad: author date (format respects --date= option)
+#x    %aD: author date, RFC2822 style
+#x    %ar: author date, relative
+#?    %at: author date, UNIX timestamp
+#?    %ai: author date, ISO 8601 format
+#?    %cn: committer name
+#?    %cN: committer name (respecting .mailmap, see git-shortlog(1) or git-blame(1))
+#?    %ce: committer email
+#?    %cE: committer email (respecting .mailmap, see git-shortlog(1) or git-blame(1))
+#?    %cd: committer date
+#?    %cD: committer date, RFC2822 style
+#?    %cr: committer date, relative
+#?    %ct: committer date, UNIX timestamp
+#?    %ci: committer date, ISO 8601 format
+#x    %d: ref names, like the --decorate option of git-log(1)
+#?    %e: encoding
+#?    %s: subject
+#?    %f: sanitized subject line, suitable for a filename
+#?    %b: body
+#?    %N: commit notes
+#?    %gD: reflog selector, e.g., refs/stash@{1}
+#?    %gd: shortened reflog selector, e.g., stash@{1}
+#?    %gs: reflog subject
+#?    %Cred: switch color to red
+#?    %Cgreen: switch color to green
+#?    %Cblue: switch color to blue
+#?    %Creset: reset color
+#?    %C(...): color specification, as described in color.branch.* config option
+#?    %m: left, right or boundary mark
+#x    %n: newline
+#?    %%: a raw %
+#?    %x00: print a byte from a hex code
+#?    %w([<w>[,<i1>[,<i2>]]]): switch line wrapping, like the -w option of git-shortlog(1).
+
+[blame]
+    date = short
+# Don't turn on "no-show-number" as this is not SVN!
+#no-show-number
+ 
+[color]
+    diff    = auto
+    status  = auto
+    branch  = auto
+    ui = true
+ 
+[push]
+   default = simple
+ 
+[pull]
+    rebase = true
+
+[color "diff-highlight"]
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
+
+[color "diff"]
+    meta = 11
+    frag = magenta 
+    commit = yellow 
+    old = red 
+    new = green 
+    whitespace = red reverse
+
+[diff-so-fancy]
+#   stripLeadingSymbols = false

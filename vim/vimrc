@@ -1,0 +1,124 @@
+let mapleader = ","
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
+
+
+set rtp+=/usr/local/opt/fzf
+
+:map <Leader>p :FZF<CR>
+:map <Leader>; :Find<CR>
+:map <Leader>/ mv<Leader>c<Space><CR>`v
+
+noremap <Up>    <Nop>
+noremap <Down>  <Nop>
+noremap <Left>  <Nop>
+noremap <Right> <Nop>
+
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
+
+
+filetype plugin on
+
+highlight Pmenu ctermbg=6 guibg=#606060
+highlight PmenuSel ctermbg=1 guifg=#dddd00 guibg=#1f82cd
+highlight PmenuSbar ctermbg=0 guibg=#d6d6d6
+
+let g:deoplete#enable_at_startup = 0
+autocmd InsertEnter * call deoplete#enable()
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | silent! pclose | endif
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
+
+set completeopt-=preview
+
+
+
+set t_Co=256
+
+syntax enable
+colorscheme darcula 
+set background=dark
+set termguicolors
+
+"Don't use REAL tabs...expand to spaces PLEASE
+set expandtab
+
+"tabstop
+set tabstop=4
+
+"textwidth
+set textwidth=80
+
+"shiftwidth:Number of spaces to use for each insertion of (auto)indent.
+set shiftwidth=4
+
+"Allow buffer changes to be hidden
+set hidden
+
+
+"Git commits.
+autocmd FileType markdown setlocal spell 
+autocmd FileType gitcommit setlocal spell 
+autocmd FileType gitcommit set tw=72 colorcolumn=51,+1
+
+autocmd FileType c set nu
+autocmd FileType c set textwidth=79 colorcolumn=80,+1
+autocmd FileType c set cursorline
+autocmd FileType c set nowrap
+autocmd FileType c set list
+autocmd FileType c set listchars=tab:␉·,trail:␠,nbsp:⎵
+
+autocmd FileType python set nu
+autocmd FileType python set textwidth=79 colorcolumn=80,+1
+autocmd FileType python set cursorline
+autocmd FileType python set nowrap
+
+autocmd FileType sh set nu
+autocmd FileType sh set textwidth=79 colorcolumn=80,+1
+autocmd FileType sh set cursorline
+autocmd FileType sh set nowrap
+
+autocmd FileType make set nu
+autocmd FileType make set textwidth=79 colorcolumn=80,+1
+autocmd FileType make set cursorline
+autocmd FileType make set nowrap
+autocmd FileType make set list
+autocmd FileType make set listchars=tab:␉·,trail:␠,nbsp:⎵
+
+autocmd FileType groovy set nu
+autocmd FileType groovy set textwidth=79 colorcolumn=80,+1
+autocmd FileType groovy set cursorline
+autocmd FileType groovy set nowrap
+
+autocmd Filetype json let g:indentLine_setConceal = 0
+
+highlight clear SpellBad
+highlight SpellBad term=standout ctermfg=1 term=underline cterm=underline
+highlight clear SpellCap
+highlight SpellCap term=underline cterm=underline
+highlight clear SpellRare
+highlight SpellRare term=underline cterm=underline
+highlight clear SpellLocal
+highlight SpellLocal term=underline cterm=underline
+
+
+let g:fzf_layout = { 'down': '~40%' }
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Comment'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Normal'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Statement'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
